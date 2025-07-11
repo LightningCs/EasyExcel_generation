@@ -35,9 +35,6 @@ public class ContentWriteHandler implements CellWriteHandler {
         // 当前cell所在行的上一行索引
         int rowIndexPrev = rowIndexCur - 1;
 
-        // 当前cell的row对象
-        Row rowCur = cell.getRow();
-
         // 上一行的row对象
         Row rowPrev = sheet.getRow(rowIndexPrev);
 

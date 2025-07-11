@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/city")
@@ -38,23 +40,41 @@ public class CityController {
 
     @GetMapping("/export")
     public void export() {
-        List<City> list = City.init();
-
-        // 创建样式策略
+        // 创建头样式策略
         WriteCellStyle head = new WriteCellStyle();
-        head.setVerticalAlignment(VerticalAlignment.CENTER);
-        head.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        head.setVerticalAlignment(VerticalAlignment.CENTER); // 水平居中
+        head.setHorizontalAlignment(HorizontalAlignment.CENTER); // 垂直居中
         // 背景颜色
-        head.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+        head.setFillForegroundColor(IndexedColors.WHITE.getIndex()); // 背景颜色
 
         WriteCellStyle content = new WriteCellStyle();
         // 边的样式
         content.setVerticalAlignment(VerticalAlignment.CENTER);
         content.setHorizontalAlignment(HorizontalAlignment.CENTER);
-        content.setBorderBottom(BorderStyle.THIN);
-        content.setBorderRight(BorderStyle.THIN);
+        content.setBorderBottom(BorderStyle.THIN); // 底部线条格式
+        content.setBorderRight(BorderStyle.THIN); // 右边线条格式
 
-        List<City> data = processed(City.init());
+        Map<String, List<City>> map = City.demo().stream().collect(Collectors.groupingBy(City::getCityName));
+        City last, end = new City("省公司", "合计");
+        List<City> result = new ArrayList<>();
+        // 加工添加小计
+        for (String key : map.keySet()) {
+            List<City> cur = map.get(key);
+            // 清空数据
+            last = new City(key, "小计");
+
+            // 添加数据
+            for (City item : map.get(key)) {
+                last.add(item);
+                end.add(item);
+            }
+
+            result.addAll(cur);
+            result.add(last);
+        }
+
+        // 结尾
+        result.add(end);
 
         // 保存到E盘
         String fileName ="E:\\双打卡报表.xlsx";
@@ -73,66 +93,7 @@ public class CityController {
                     .relativeHeadRowIndex(1)
                     .build();
 
-            excelWriter.write(data, sheet, table0);
+            excelWriter.write(result, sheet, table0);
         }
-    }
-
-    /**
-     * 添加 小计和总计
-     * @param data
-     * @return data
-     */
-    public List<City> processed(List<City> data) {
-        City temp = new City("小计"), all = new City("合计");
-        all.setCityName("省公司");
-        ArrayList<City> newData = new ArrayList<>(data);
-        int len = data.size(), j = 0;
-
-        // j 偏移量
-        for (int i = 0; i < len; i++) {
-            City city = data.get(i);
-
-            // 当前模板城市名不为空且前后不一致
-            if (temp.getCityName() != null && city.getCityName() != temp.getCityName()) {
-                newData.add(i + j, temp);
-                temp = new City("小计");
-                j++;
-                continue;
-            }
-
-            temp.setCityName(city.getCityName());
-            temp.setFaultSignAll(temp.getFaultSignAll() + city.getFaultSignAll());
-            temp.setFaultSignFinish(temp.getFaultSignFinish() + city.getFaultSignFinish());
-            temp.setFaultSignLack(temp.getFaultSignLack() + city.getFaultSignLack());
-            temp.setInspectionSignAll(temp.getInspectionSignAll() + city.getInspectionSignAll());
-            temp.setInspectionSignFinish(temp.getInspectionSignFinish() + city.getInspectionSignFinish());
-            temp.setInspectionSignLack(temp.getInspectionSignLack() + city.getInspectionSignLack());
-            temp.setGeneratorSignAll(temp.getGeneratorSignAll() + city.getGeneratorSignAll());
-            temp.setGeneratorSignFinish(temp.getGeneratorSignFinish() + city.getGeneratorSignFinish());
-            temp.setGeneratorSignLack(temp.getGeneratorSignLack() + city.getGeneratorSignLack());
-            temp.setMaintenanceSignAll(temp.getMaintenanceSignAll() + city.getMaintenanceSignAll());
-            temp.setMaintenanceSignFinish(temp.getMaintenanceSignFinish() + city.getMaintenanceSignFinish());
-            temp.setMaintenanceSignLack(temp.getMaintenanceSignLack() + city.getMaintenanceSignLack());
-            temp.setOverflow(temp.getOverflow() + city.getOverflow());
-
-            all.setFaultSignAll(all.getFaultSignAll() + city.getFaultSignAll());
-            all.setFaultSignFinish(all.getFaultSignFinish() + city.getFaultSignFinish());
-            all.setFaultSignLack(all.getFaultSignLack() + city.getFaultSignLack());
-            all.setInspectionSignAll(all.getInspectionSignAll() + city.getInspectionSignAll());
-            all.setInspectionSignFinish(all.getInspectionSignFinish() + city.getInspectionSignFinish());
-            all.setInspectionSignLack(all.getInspectionSignLack() + city.getInspectionSignLack());
-            all.setGeneratorSignAll(all.getGeneratorSignAll() + city.getGeneratorSignAll());
-            all.setGeneratorSignFinish(all.getGeneratorSignFinish() + city.getGeneratorSignFinish());
-            all.setGeneratorSignLack(all.getGeneratorSignLack() + city.getGeneratorSignLack());
-            all.setMaintenanceSignAll(all.getMaintenanceSignAll() + city.getMaintenanceSignAll());
-            all.setMaintenanceSignFinish(all.getMaintenanceSignFinish() + city.getMaintenanceSignFinish());
-            all.setMaintenanceSignLack(all.getMaintenanceSignLack() + city.getMaintenanceSignLack());
-            all.setOverflow(all.getOverflow() + city.getOverflow());
-        }
-
-        newData.add(len + j++, temp);
-        newData.add(len + j, all);
-
-        return newData;
     }
 }

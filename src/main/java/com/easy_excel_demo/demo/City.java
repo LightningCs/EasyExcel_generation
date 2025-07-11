@@ -61,6 +61,19 @@ public class City {
 
     public City(String countyName) {
         this.countyName = countyName;
+        init();
+    }
+
+    public City(String cityName, String countyName) {
+        this.cityName = cityName;
+        this.countyName = countyName;
+        init();
+    }
+
+    /**
+     * 初始化数据
+     */
+    public void init() {
         this.faultSignAll = 0L;
         this.faultSignFinish = 0L;
         this.faultSignLack = 0L;
@@ -76,7 +89,7 @@ public class City {
         this.overflow = 0L;
     }
 
-    public static List<City> init() {
+    public static List<City> demo() {
         List<City> list = Arrays.asList(
                 new City("广州市", "白云区", 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
                 new City("广州市", "从化区", 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
@@ -87,5 +100,25 @@ public class City {
         );
 
         return list;
+    }
+
+    /**
+     * 累加数据
+     * @param item
+     */
+    public void add(City item) {
+        this.faultSignAll += item.getFaultSignAll();
+        this.faultSignFinish += item.getFaultSignFinish();
+        this.faultSignLack += item.getFaultSignLack();
+        this.inspectionSignAll += item.getInspectionSignAll();
+        this.inspectionSignFinish += item.getInspectionSignFinish();
+        this.inspectionSignLack += item.getInspectionSignLack();
+        this.generatorSignAll += item.getGeneratorSignAll();
+        this.generatorSignFinish += item.getGeneratorSignFinish();
+        this.generatorSignLack += item.getGeneratorSignLack();
+        this.maintenanceSignAll += item.getMaintenanceSignAll();
+        this.maintenanceSignFinish += item.getMaintenanceSignFinish();
+        this.maintenanceSignLack += item.getMaintenanceSignLack();
+        this.overflow += item.getOverflow();
     }
 }

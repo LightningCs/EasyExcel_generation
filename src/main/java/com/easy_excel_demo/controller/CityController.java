@@ -1,9 +1,6 @@
 package com.easy_excel_demo.controller;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.write.metadata.WriteSheet;
-import com.alibaba.excel.write.metadata.WriteTable;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.easy_excel_demo.demo.City;
 import com.easy_excel_demo.strategy.ExcelStyleStrategy;
@@ -18,9 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,17 +24,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CityController {
 
-    @GetMapping
-    public List<City> getCities() {
-
-        // 读取
-        EasyExcel.read();
-
-        return null;
-    }
-
-    @GetMapping("/export")
-    public void export() {
+    @GetMapping("/export/check")
+    public void export_check() {
         // 创建头样式策略
         WriteCellStyle head = new WriteCellStyle();
         head.setVerticalAlignment(VerticalAlignment.CENTER); // 水平居中
@@ -54,9 +40,110 @@ public class CityController {
         content.setBorderBottom(BorderStyle.THIN); // 底部线条格式
         content.setBorderRight(BorderStyle.THIN); // 右边线条格式
 
-        Map<String, List<City>> map = City.demo().stream().collect(Collectors.groupingBy(City::getCityName));
-        City last, end = new City("省公司", "合计");
+//        Map<String, List<City>> map = City.demo().stream().collect(Collectors.groupingBy(City::getCityName));
+        Map<String, List<City>> map = City.demo0().stream().collect(Collectors.groupingBy(City::getCityName));
+//        Map<String, List<City>> map1 = City.demo1().stream().collect(Collectors.groupingBy(City::getCityName));
+//        Map<String, List<City>> map2 = City.demo2().stream().collect(Collectors.groupingBy(City::getCityName));
+//        Map<String, List<City>> map3 = City.demo3().stream().collect(Collectors.groupingBy(City::getCityName));
+
+        List<City> result = map(map);
+
+        // 保存到E盘
+        String fileName ="E:\\双打卡报表1.xlsx";
+        String title = "“双打卡”预防监控(" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日HH时")) + ")";
+
+        // 关闭资源
+        EasyExcel.write(fileName, City.class)
+                .sheet(0, "城市数据")
+                .head(head(result))
+                .registerWriteHandler(new ExcelStyleStrategy(head, content))
+                .registerWriteHandler(new TitleRowWriteHandler(title))
+                .registerWriteHandler(new ContentWriteHandler())
+                .relativeHeadRowIndex(1)
+                .doWrite(data(result));
+    }
+
+    public List<List<String>> head(List<City> data) {
+        List<List<String>> result = new ArrayList<>();
+        City city = data.get(0);
+
+        result.add(Arrays.asList("地市", "地市"));
+        result.add(Arrays.asList("区县", "区县"));
+
+        if (city.getFaultSignAll() != null) {
+            result.add(Arrays.asList("故障工单", "应打卡"));
+            result.add(Arrays.asList("故障工单", "已打卡"));
+            result.add(Arrays.asList("故障工单", "未打卡"));
+        }
+
+        if (city.getInspectionSignAll() != null) {
+            result.add(Arrays.asList("巡检工单", "应打卡"));
+            result.add(Arrays.asList("巡检工单", "已打卡"));
+            result.add(Arrays.asList("巡检工单", "未打卡"));
+        }
+
+        if (city.getGeneratorSignAll() != null) {
+            result.add(Arrays.asList("发电工单", "应打卡"));
+            result.add(Arrays.asList("发电工单", "已打卡"));
+            result.add(Arrays.asList("发电工单", "未打卡"));
+        }
+
+        if (city.getMaintenanceSignAll() != null) {
+            result.add(Arrays.asList("维修工单", "应打卡"));
+            result.add(Arrays.asList("维修工单", "已打卡"));
+            result.add(Arrays.asList("维修工单", "未打卡"));
+        }
+
+        result.add(Arrays.asList("冗余", "冗余"));
+
+        return result;
+    }
+
+    public List<List<Object>> data(List<City> data) {
+        List<List<Object>> result = new ArrayList<>();
+
+        data.forEach((item) -> {
+            List<Object> tmp = new ArrayList<>();
+
+            tmp.add(item.getCityName());
+            tmp.add(item.getCountyName());
+
+            if (item.getFaultSignAll() != null) {
+                tmp.add(item.getFaultSignAll());
+                tmp.add(item.getFaultSignFinish());
+                tmp.add(item.getFaultSignLack());
+            }
+
+            if (item.getInspectionSignAll() != null) {
+                tmp.add(item.getInspectionSignAll());
+                tmp.add(item.getInspectionSignFinish());
+                tmp.add(item.getInspectionSignLack());
+            }
+
+            if (item.getGeneratorSignAll() != null) {
+                tmp.add(item.getGeneratorSignAll());
+                tmp.add(item.getGeneratorSignFinish());
+                tmp.add(item.getGeneratorSignLack());
+            }
+
+            if (item.getMaintenanceSignAll() != null) {
+                tmp.add(item.getMaintenanceSignAll());
+                tmp.add(item.getMaintenanceSignFinish());
+                tmp.add(item.getMaintenanceSignLack());
+            }
+
+            tmp.add(item.getOverflow());
+
+            result.add(tmp);
+        });
+
+        return result;
+    }
+
+    public List<City> map(Map<String, List<City>> map) {
         List<City> result = new ArrayList<>();
+
+        City last, end = new City("省公司", "合计");
         // 加工添加小计
         for (String key : map.keySet()) {
             List<City> cur = map.get(key);
@@ -76,24 +163,6 @@ public class CityController {
         // 结尾
         result.add(end);
 
-        // 保存到E盘
-        String fileName ="E:\\双打卡报表.xlsx";
-        String title = "“双打卡”预防监控(" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日HH时")) + ")";
-
-        // 关闭资源
-        try (ExcelWriter excelWriter = EasyExcel.write(fileName, City.class).build()) {
-            WriteSheet sheet = EasyExcel.writerSheet("城市数据")
-                    .needHead(Boolean.FALSE).build();
-
-            WriteTable table0 = EasyExcel.writerTable(0)
-                    .needHead(Boolean.TRUE)
-                    .registerWriteHandler(new ExcelStyleStrategy(head, content))
-                    .registerWriteHandler(new TitleRowWriteHandler(title))
-                    .registerWriteHandler(new ContentWriteHandler())
-                    .relativeHeadRowIndex(1)
-                    .build();
-
-            excelWriter.write(result, sheet, table0);
-        }
+        return result;
     }
 }

@@ -1,18 +1,19 @@
 package com.easy_excel_demo;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.easy_excel_demo.demo.City;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SpringBootTest
 class EasyExcelDemoApplicationTests {
 
     @Test
-    void contextLoads() {
+    void normal() {
         List<City> data = City.demo();
         // 分组
         Map<String, List<City>> map = data.stream().collect(Collectors.groupingBy(City::getCityName));
@@ -32,4 +33,53 @@ class EasyExcelDemoApplicationTests {
                 System.out.println(cur);
     }
 
+    @Test
+    void dynamic() {
+        String fileName = "E:\\动态表头.xlsx";
+
+        EasyExcel.write(fileName, City.class)
+                .sheet(0, "动态表头测试")
+                .head(head())
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .doWrite(Collections.emptyList());
+    }
+
+    public List<List<String>> head() {
+        List<List<String>> result = new ArrayList<>();
+
+        result.add(Arrays.asList("地市", "地市", "地市"));
+        result.add(Arrays.asList("区县", "区县", "区县"));
+
+        if (true) {
+            result.add(Arrays.asList("故障工单", "应打卡", "应打卡"));
+            result.add(Arrays.asList("故障工单", "已打卡", "质检合格"));
+            result.add(Arrays.asList("故障工单", "已打卡", "质检不合格"));
+            result.add(Arrays.asList("故障工单", "未打卡", "未打卡"));
+        }
+
+        if (false) {
+            result.add(Arrays.asList("巡检工单", "应打卡", "应打卡"));
+            result.add(Arrays.asList("巡检工单", "已打卡", "质检合格"));
+            result.add(Arrays.asList("巡检工单", "已打卡", "质检不合格"));
+            result.add(Arrays.asList("巡检工单", "未打卡", "未打卡"));
+        }
+
+        if (true) {
+            result.add(Arrays.asList("发电工单", "应打卡", "应打卡"));
+            result.add(Arrays.asList("发电工单", "已打卡", "质检合格"));
+            result.add(Arrays.asList("发电工单", "已打卡", "质检不合格"));
+            result.add(Arrays.asList("发电工单", "未打卡", "未打卡"));
+        }
+
+        if (false) {
+            result.add(Arrays.asList("维修工单", "应打卡", "应打卡"));
+            result.add(Arrays.asList("维修工单", "已打卡", "质检合格"));
+            result.add(Arrays.asList("维修工单", "已打卡", "质检不合格"));
+            result.add(Arrays.asList("维修工单", "未打卡", "未打卡"));
+        }
+
+        result.add(Arrays.asList("冗余", "冗余", "冗余"));
+
+        return result;
+    }
 }

@@ -1,6 +1,5 @@
 package com.easy_excel_demo.demo;
 
-import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.AllArgsConstructor;
@@ -16,50 +15,34 @@ import java.util.List;
 @ExcelIgnoreUnannotated
 public class City {
     @ExcelProperty("地市")
-//    @ExcelIgnore
-//    @ColumnWidth(10)
     private String cityName;
     @ExcelProperty("区县")
-//    @ColumnWidth(10)
     private String countyName;
     @ExcelProperty({"故障工单", "应打卡"})
-//    @ColumnWidth(10)
     private Long faultSignAll;
     @ExcelProperty({"故障工单", "已打卡"})
-//    @ColumnWidth(10)
     private Long faultSignFinish;
     @ExcelProperty({"故障工单", "未打卡"})
-//    @ColumnWidth(10)
     private Long faultSignLack;
     @ExcelProperty({"巡检工单", "应打卡"})
-//    @ColumnWidth(10)
     private Long inspectionSignAll;
     @ExcelProperty({"巡检工单", "已打卡"})
-//    @ColumnWidth(10)
     private Long inspectionSignFinish;
     @ExcelProperty({"巡检工单", "未打卡"})
-//    @ColumnWidth(10)
     private Long inspectionSignLack;
     @ExcelProperty({"发电工单", "应打卡"})
-//    @ColumnWidth(10)
     private Long generatorSignAll;
     @ExcelProperty({"发电工单", "已打卡"})
-//    @ColumnWidth(10)
     private Long generatorSignFinish;
     @ExcelProperty({"发电工单", "未打卡"})
-//    @ColumnWidth(10)
     private Long generatorSignLack;
     @ExcelProperty({"维护工单", "应打卡"})
-//    @ColumnWidth(10)
     private Long maintenanceSignAll;
     @ExcelProperty({"维护工单", "已打卡"})
-//    @ColumnWidth(10)
     private Long maintenanceSignFinish;
     @ExcelProperty({"维护工单", "未打卡"})
-//    @ColumnWidth(10)
     private Long maintenanceSignLack;
     @ExcelProperty("冗余")
-//    @ColumnWidth(10)
     private Long overflow;
 
     public City(String countyName) {
@@ -71,6 +54,28 @@ public class City {
         this.cityName = cityName;
         this.countyName = countyName;
         init();
+    }
+
+    public City(City city) {
+        this.cityName = city.getCityName();
+        this.countyName = city.getCountyName();
+        this.faultSignAll = city.getFaultSignAll();
+        this.faultSignFinish = city.getFaultSignFinish();
+        this.faultSignLack = city.getFaultSignLack();
+        this.inspectionSignAll = city.getInspectionSignAll();
+        this.inspectionSignFinish = city.getInspectionSignFinish();
+        this.inspectionSignLack = city.getInspectionSignLack();
+        this.generatorSignAll = city.getGeneratorSignAll();
+        this.generatorSignFinish = city.getGeneratorSignFinish();
+        this.generatorSignLack = city.getGeneratorSignLack();
+        this.maintenanceSignAll = city.getMaintenanceSignAll();
+        this.maintenanceSignFinish = city.getMaintenanceSignFinish();
+        this.maintenanceSignLack = city.getMaintenanceSignLack();
+        this.overflow = city.getOverflow();
+    }
+
+    public static City clone(City city) {
+        return new City(city);
     }
 
     /**
@@ -161,7 +166,7 @@ public class City {
      * 累加数据
      * @param item
      */
-    public void add(City item) {
+    public void increase(City item) {
         if (item.getFaultSignAll() != null)
             this.faultSignAll = (this.faultSignAll == null ? 0 : this.faultSignAll) + item.getFaultSignAll();
         if (item.getFaultSignFinish() != null)

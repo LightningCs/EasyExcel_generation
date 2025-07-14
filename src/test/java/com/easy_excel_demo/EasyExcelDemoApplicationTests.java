@@ -6,6 +6,7 @@ import com.easy_excel_demo.demo.City;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ class EasyExcelDemoApplicationTests {
             last = new City(key, "小计");
 
             //  遍历添加
-            cur.forEach(last::add);
+            cur.forEach(last::increase);
 
             cur.add(last);
         }
@@ -81,5 +82,21 @@ class EasyExcelDemoApplicationTests {
         result.add(Arrays.asList("冗余", "冗余", "冗余"));
 
         return result;
+    }
+
+    @Test
+    void test() {
+        City city = new City("广州市", "白云区", null, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L);
+
+        try {
+            Field field = city.getClass().getDeclaredField("faultSignAll");
+            field.setAccessible(true);
+
+            Object o = field.get(city);
+
+            System.out.println(o);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }

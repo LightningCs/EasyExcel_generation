@@ -4,17 +4,17 @@ import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.easy_excel_demo.demo.City;
-import lombok.AllArgsConstructor;
+import com.easy_excel_demo.demo.ColumnConfig;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class TitleRowWriteHandler implements SheetWriteHandler {
-    private String title;
+    private final String title;
+    private final ColumnConfig columnConfig;
 
     @Override
     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
@@ -40,7 +40,7 @@ public class TitleRowWriteHandler implements SheetWriteHandler {
         titleCell.setCellStyle(titleStyle);
 
         // 合并单元格（跨整行）
-        int lastCol = City.class.getDeclaredFields().length - 1; // 根据实际列数调整
+        int lastCol = City.class.getDeclaredFields().length - 1 - columnConfig.getPace(); // 根据实际列数调整
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, lastCol));
     }
 }

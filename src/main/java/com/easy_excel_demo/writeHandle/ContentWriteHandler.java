@@ -16,13 +16,11 @@ public class ContentWriteHandler implements CellWriteHandler {
     @Override
     public void afterCellDispose(WriteSheetHolder writeSheetHolder, WriteTableHolder writeTableHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
         if (isHead) {
-            log.info("\r\n当前行为表头，无需操作");
             return;
         }
 
         // 判断当前 Cell 所在列索引不是0不执行操作
         if (cell.getColumnIndex() != 0) {
-            log.info("\r\n当前不是0列，无需操作");
             return;
         }
 
@@ -45,16 +43,11 @@ public class ContentWriteHandler implements CellWriteHandler {
         Object cur = cell.getCellType() == CellType.STRING ? cell.getStringCellValue() : cell.getNumericCellValue();
         Object pre = cellPrev.getCellType() == CellType.STRING ? cellPrev.getStringCellValue() : cellPrev.getNumericCellValue();
 
-        log.info("当前单元格的值是{}，上一行单元格的值是{}", cur, pre);
-
         // 判断是否一致
         if (!cur.equals(pre)) {
             // 不一致不进行操作
-            log.info("\r\n两行单元格值不一致，无需操作");
             return;
         }
-
-        log.info("\r\n两行单元格值一致，进行合并");
 
         // 获取所有合并区域
         List<CellRangeAddress> mergedRegions = sheet.getMergedRegions();
@@ -79,7 +72,5 @@ public class ContentWriteHandler implements CellWriteHandler {
             CellRangeAddress cellAddresses = new CellRangeAddress(rowIndexPrev, rowIndexCur, cell.getColumnIndex(), cell.getColumnIndex());
             sheet.addMergedRegion(cellAddresses);
         }
-
-        log.info("\r\n合并单元格完成");
     }
 }

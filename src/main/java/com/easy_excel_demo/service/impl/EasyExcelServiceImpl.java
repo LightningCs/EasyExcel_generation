@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class EasyExcelServiceImpl<T> implements IEasyExcelService<T> {
     private final ColumnConfig columnConfig;
 
     @Override
-    public boolean export(Integer sheetNo, String sheetName, String fileName, String title, List<T> list) {
+    public boolean export(Integer sheetNo, String sheetName, String fileName, String title, List<T> list, Function<List<T>, List<T>> f) {
         // 关闭资源
         try {
             EasyExcel.write(fileName, City.class)
@@ -31,8 +32,9 @@ public class EasyExcelServiceImpl<T> implements IEasyExcelService<T> {
                     .registerWriteHandler(new ContentWriteHandler())
                     .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
                     .relativeHeadRowIndex(1)
-                    .doWrite(process((List<City>) list));
+                    .doWrite(f == null ? list : f.apply(list));
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
 
@@ -57,31 +59,5 @@ public class EasyExcelServiceImpl<T> implements IEasyExcelService<T> {
         }
 
         return excludeFields;
-    }
-
-    public List<City> process(List<City> list) {
-        List<City> result = new ArrayList<>();
-
-        City last = null, end = new City("省公司", "合计");
-        // 加工添加小计
-        for (City cur : list) {
-            if (last == null) {
-                last = new City(cur.getCityName(), "小计");
-            }
-
-            if (!last.getCityName().equals(cur.getCityName())) {
-                result.add(last);
-                last = null;
-            } else
-                last.increase(cur);
-
-            result.add(cur);
-            end.increase(cur);
-        }
-
-        result.add(last);
-        result.add(end);
-
-        return result;
     }
 }

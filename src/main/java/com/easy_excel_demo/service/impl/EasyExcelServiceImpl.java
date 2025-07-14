@@ -5,6 +5,7 @@ import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy
 import com.easy_excel_demo.demo.City;
 import com.easy_excel_demo.demo.ColumnConfig;
 import com.easy_excel_demo.service.IEasyExcelService;
+import com.easy_excel_demo.strategy.FillTitleMergeStrategy;
 import com.easy_excel_demo.style.WriteStyle;
 import com.easy_excel_demo.writeHandle.ContentWriteHandler;
 import com.easy_excel_demo.writeHandle.TitleRowWriteHandler;
@@ -28,9 +29,10 @@ public class EasyExcelServiceImpl<T> implements IEasyExcelService<T> {
                     .sheet(sheetNo, sheetName)
                     .excludeColumnFieldNames(excludeColumn(list.get(0), columnConfig.getColumns()))
                     .registerWriteHandler(WriteStyle.style())
-                    .registerWriteHandler(new TitleRowWriteHandler(title, columnConfig))
-                    .registerWriteHandler(new ContentWriteHandler())
-                    .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                    .registerWriteHandler(new TitleRowWriteHandler(title, columnConfig)) // 动态标题
+                    .registerWriteHandler(new FillTitleMergeStrategy()) // 标题分割
+                    .registerWriteHandler(new ContentWriteHandler()) // 内容合并
+                    .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()) // 自适应宽度
                     .relativeHeadRowIndex(1)
                     .doWrite(f == null ? list : f.apply(list));
         } catch (Exception e) {

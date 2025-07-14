@@ -112,12 +112,12 @@ public class City {
 
     public static List<City> demo0() {
         List<City> list = Arrays.asList(
-                new City("广州市", "白云区", null, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
-                new City("广州市", "从化区", null, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
-                new City("广州市", "花都区", null, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
-                new City("广州市", "越秀区", null, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
-                new City("梅州市", "丰顺区", null, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
-                new City("梅州市", "蕉岭区", null, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L)
+                new City("广州市", "白云区", 2L, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
+                new City("广州市", "从化区", 2L, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
+                new City("广州市", "花都区", 2L, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
+                new City("广州市", "越秀区", 2L, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
+                new City("梅州市", "丰顺区", 2L, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L),
+                new City("梅州市", "蕉岭区", 2L, null, null, 2L, 1L, 1L, 2L, 1L, 1L, 2L, 1L, 1L, 0L)
         );
 
         return list;

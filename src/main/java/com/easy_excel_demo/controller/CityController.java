@@ -26,7 +26,7 @@ public class CityController {
                 "数据统计",
                 "E:\\双打卡报表.xlsx",
                 "“双打卡”预防监控(" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日HH时")),
-                City.demo(),
+                City.demo0(),
                 (list) -> {
                     List<City> result = new ArrayList<>();
 
